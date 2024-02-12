@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap
+data:
+  rardb_url: jdbc:mysql://mysqlmynetdatabaseinstance.cxbz84syjoxg.us-east-1.rds.amazonaws.com:3306/rar
+  eureka_service_address: http://eureka-0.eureka-service:8761/eureka

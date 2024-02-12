@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment # Kubernetes resource kind we are creating
+metadata:
+  name: rarapiapp
+  labels:
+    app: rarapiapp
+spec:
+  replicas: 1 # Number of replicas that will be created for this deployment
+  selector:
+    matchLabels:
+      app: rarapiapp
+  template:
+    metadata:
+      labels:
+        app: rarapiapp
+    spec:
+      containers:
+        - name: rarapiapp
+          image: mathanm/rarapi-service:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081 #
+
+          env: # Environment variables supplied to the Pod
+            - name: SPRING_DATASOURCE_USERNAME # Name of the environment variable
+              valueFrom: # Get the value of environment variable from kubernetes secrets
+                secretKeyRef:
+                  name: secret
+                  key: mysql-username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: mysql-password
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: configmap
+                  key: rardb_url
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: rarapi-service
+spec:
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+  selector:
+    app: rarapiapp
